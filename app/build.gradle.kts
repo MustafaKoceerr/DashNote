@@ -84,4 +84,19 @@ dependencies {
     implementation(libs.room.ktx)
 
     ksp(libs.room.compiler)
+
+    // Core Modülleri
+    implementation(project(":core:designsystem"))
+    implementation(project(":core:common"))
+    implementation(project(":core:navigation"))
+
+    // Feature Modülleri (API'ler ve IMPL'ler app modülünde birleşir)
+    implementation(project(":feature:auth:api"))
+    implementation(project(":feature:auth:impl"))
+
+    implementation(project(":feature:notes:api"))
+    implementation(project(":feature:notes:impl"))
+
+    implementation(project(":feature:settings:api"))
+    implementation(project(":feature:settings:impl"))
 }

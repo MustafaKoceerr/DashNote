@@ -1,4 +1,4 @@
-package com.mustafakoceerr.dashnote.ui.theme
+package com.mustafakoceerr.dashnote.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

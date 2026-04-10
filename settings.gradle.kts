@@ -24,4 +24,16 @@ dependencyResolutionManagement {
 
 rootProject.name = "DashNote"
 include(":app")
- 
+include(":core:common")
+include(":core:designsystem")
+include(":core:database")
+include(":core:navigation")
+
+include(":data:auth")
+
+include(":feature:auth:api")
+include(":feature:auth:impl")
+include(":feature:notes:api")
+include(":feature:notes:impl")
+include(":feature:settings:api")
+include(":feature:settings:impl")
