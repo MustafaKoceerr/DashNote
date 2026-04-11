@@ -1,8 +1,8 @@
 package com.mustafakoceerr.dashnote.data.auth.model
 
 /**
- * Uygulama genelinde kullanılacak saf Kullanıcı nesnesi.
- * Firebase veya herhangi bir kütüphane bağımlılığı içermez.
+ * Uygulamanın her yerinde (SSOT) kullanılacak olan saf Kullanıcı modeli.
+ * FirebaseUser sınıfını doğrudan UI'a sızdırmamak için bu wrapper'ı kullanıyoruz.
  */
 data class AuthUser(
     val id: String,
