@@ -23,10 +23,19 @@ dependencies {
 
     // Kendi API'si, Navigasyon Çekirdeği ve Gideceği hedefin API'si
     implementation(project(":core:navigation"))
+    implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
+    implementation(project(":data:auth"))
     implementation(project(":feature:auth:api"))
     implementation(project(":feature:notes:api"))
 
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+
     ksp(libs.hilt.compiler)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.google.identity.googleid)
+
 }

@@ -39,6 +39,8 @@ import com.mustafakoceerr.dashnote.feature.notes.impl.navigation.notesEntries
 import com.mustafakoceerr.dashnote.feature.settings.api.navigation.SettingsRoute
 import com.mustafakoceerr.dashnote.feature.settings.impl.navigation.settingsEntry
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.CompositionLocalProvider
+import com.mustafakoceerr.dashnote.core.designsystem.util.LocalSnackbarHostState
 
 @Composable
 fun DashNoteApp(modifier: Modifier = Modifier) {
@@ -62,80 +64,90 @@ fun DashNoteApp(modifier: Modifier = Modifier) {
     val isTopLevel = currentKey in navigationState.topLevelKeys
     val isAuthScreen = currentKey == AuthRoute
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = !isAuthScreen,
-        drawerContent = {
-            if (!isAuthScreen) {
-                ModalDrawerSheet {
-                    Text("DashNote", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
-                    HorizontalDivider()
-                    NavigationDrawerItem(
-                        label = { Text("Notlar") },
-                        selected = navigationState.currentTopLevelKey == NotesRoute,
-                        onClick = { navigator.navigate(NotesRoute); scope.launch { drawerState.close() } },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Arşiv") },
-                        selected = navigationState.currentTopLevelKey == ArchiveRoute,
-                        onClick = { navigator.navigate(ArchiveRoute); scope.launch { drawerState.close() } },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Çöp Kutusu") },
-                        selected = navigationState.currentTopLevelKey == TrashRoute,
-                        onClick = { navigator.navigate(TrashRoute); scope.launch { drawerState.close() } },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
-                    HorizontalDivider()
-                    NavigationDrawerItem(
-                        label = { Text("Ayarlar") },
-                        selected = navigationState.currentTopLevelKey == SettingsRoute,
-                        onClick = { navigator.navigate(SettingsRoute); scope.launch { drawerState.close() } },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
+    // BÜTÜN UYGULAMAYI COMPOSITION LOCAL İLE SARMALIYORUZ
+    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            gesturesEnabled = !isAuthScreen,
+            drawerContent = {
+                if (!isAuthScreen) {
+                    ModalDrawerSheet {
+                        Text(
+                            "DashNote",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        HorizontalDivider()
+                        NavigationDrawerItem(
+                            label = { Text("Notlar") },
+                            selected = navigationState.currentTopLevelKey == NotesRoute,
+                            onClick = { navigator.navigate(NotesRoute); scope.launch { drawerState.close() } },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                        NavigationDrawerItem(
+                            label = { Text("Arşiv") },
+                            selected = navigationState.currentTopLevelKey == ArchiveRoute,
+                            onClick = { navigator.navigate(ArchiveRoute); scope.launch { drawerState.close() } },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                        NavigationDrawerItem(
+                            label = { Text("Çöp Kutusu") },
+                            selected = navigationState.currentTopLevelKey == TrashRoute,
+                            onClick = { navigator.navigate(TrashRoute); scope.launch { drawerState.close() } },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                        HorizontalDivider()
+                        NavigationDrawerItem(
+                            label = { Text("Ayarlar") },
+                            selected = navigationState.currentTopLevelKey == SettingsRoute,
+                            onClick = { navigator.navigate(SettingsRoute); scope.launch { drawerState.close() } },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
                 }
             }
-        }
-    ) {
-        // GLOBAL SCAFFOLD
-        Scaffold(
-            topBar = {
-                if (!isAuthScreen) {
-                    val title = when (currentKey) {
-                        NotesRoute -> "Notlar"
-                        ArchiveRoute -> "Arşiv"
-                        TrashRoute -> "Çöp Kutusu"
-                        SettingsRoute -> "Ayarlar"
-                        is EditorRoute -> "Notu Düzenle"
-                        else -> "DashNote"
-                    }
-                    DashNoteTopAppBar(
-                        title = title,
-                        isTopLevel = isTopLevel,
-                        onNavigationClick = {
-                            if (isTopLevel) scope.launch { drawerState.open() } else navigator.goBack()
+        ) {
+            // GLOBAL SCAFFOLD
+            Scaffold(
+                topBar = {
+                    if (!isAuthScreen) {
+                        val title = when (currentKey) {
+                            NotesRoute -> "Notlar"
+                            ArchiveRoute -> "Arşiv"
+                            TrashRoute -> "Çöp Kutusu"
+                            SettingsRoute -> "Ayarlar"
+                            is EditorRoute -> "Notu Düzenle"
+                            else -> "DashNote"
                         }
-                    )
-                }
-            },
-            floatingActionButton = {
-                // Sadece Ana Notlar ekranında yeni not ekleme butonu gösterilir
-                if (currentKey == NotesRoute) {
-                    FloatingActionButton(onClick = { navigator.navigate(EditorRoute(null)) }) {
-                        Icon(Icons.Default.Add, contentDescription = "Yeni Not Ekle")
+                        DashNoteTopAppBar(
+                            title = title,
+                            isTopLevel = isTopLevel,
+                            onNavigationClick = {
+                                if (isTopLevel) scope.launch { drawerState.open() } else navigator.goBack()
+                            }
+                        )
                     }
-                }
-            },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            modifier = modifier.fillMaxSize()
-        ) { innerPadding ->
-            NavDisplay(
-                entries = navigationState.toEntries(appEntryProvider),
-                onBack = { navigator.goBack() },
-                modifier = Modifier.padding(innerPadding).fillMaxSize()
-            )
+                },
+                floatingActionButton = {
+                    // Sadece Ana Notlar ekranında yeni not ekleme butonu gösterilir
+                    if (currentKey == NotesRoute) {
+                        FloatingActionButton(onClick = { navigator.navigate(EditorRoute(null)) }) {
+                            Icon(Icons.Default.Add, contentDescription = "Yeni Not Ekle")
+                        }
+                    }
+                },
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                modifier = modifier.fillMaxSize()
+            ) { innerPadding ->
+                NavDisplay(
+                    entries = navigationState.toEntries(appEntryProvider),
+                    onBack = { navigator.goBack() },
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                )
+            }
         }
     }
 }
